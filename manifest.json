@@ -10,8 +10,20 @@
     "host_permissions": [
         "<all_urls>"
     ],
+    "icons": {
+        "16": "icons/sound_icon16x16.png",
+        "32": "icons/sound_icon32x32.png",
+        "48": "icons/sound_icon48x48.png",
+        "128": "icons/sound_icon128x128.png"
+    },
     "action": {
-        "default_popup": "popup.html"
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icons/sound_icon16x16.png",
+            "32": "icons/sound_icon32x32.png",
+            "48": "icons/sound_icon48x48.png",
+            "128": "icons/sound_icon128x128.png"
+        }
     },
     "content_scripts": [
         {
