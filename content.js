@@ -8,14 +8,29 @@
     let source;
 
     function initAudioEngine() {
-        if (audioCtx) return; // Singleton
+        if (audioCtx) return; // Audio Context already exists
+
+        // Try to find media element
+        const mediaElement = document.querySelector('video') || document.querySelector('audio');
+
+        if (!mediaElement) {
+            // Not found yet? Watch for it.
+            if (!window._observerActive) {
+                const observer = new MutationObserver(() => {
+                    const el = document.querySelector('video') || document.querySelector('audio');
+                    if (el) {
+                        observer.disconnect();
+                        window._observerActive = false;
+                        initAudioEngine();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+                window._observerActive = true;
+            }
+            return;
+        }
 
         try {
-            const mediaElement = document.querySelector('video') || document.querySelector('audio');
-            if (!mediaElement) {
-                return;
-            }
-
             // Cross-browser AudioContext
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             audioCtx = new AudioContext();
@@ -40,7 +55,11 @@
                 trebleNode.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
 
-                console.log("Volume Booster: Audio engine initialized.");
+                console.log("Volume Booster: Audio engine initialized in frame:", window.location.href);
+
+                // Restore settings if present
+                restoreSettings();
+
             } catch (e) {
                 console.warn("Volume Booster: Unable to hook into media element (likely CORS restriction).", e);
                 audioCtx = null;
@@ -51,21 +70,26 @@
         }
     }
 
-    // Initialize on load
-    initAudioEngine();
+    function restoreSettings() {
+        if (sessionStorage.getItem('volume-booster-gain')) {
+            const val = parseFloat(sessionStorage.getItem('volume-booster-gain'));
+            if (gainNode) gainNode.gain.value = val;
+        }
+        if (sessionStorage.getItem('volume-booster-bass')) {
+            const val = parseFloat(sessionStorage.getItem('volume-booster-bass'));
+            if (bassNode) bassNode.gain.value = val;
+        }
+        if (sessionStorage.getItem('volume-booster-treble')) {
+            const val = parseFloat(sessionStorage.getItem('volume-booster-treble'));
+            if (trebleNode) trebleNode.gain.value = val;
+        }
+    }
 
-    // Restore volume and EQ from session storage
-    if (sessionStorage.getItem('volume-booster-gain')) {
-        const val = parseFloat(sessionStorage.getItem('volume-booster-gain'));
-        if (gainNode) gainNode.gain.value = val;
-    }
-    if (sessionStorage.getItem('volume-booster-bass')) {
-        const val = parseFloat(sessionStorage.getItem('volume-booster-bass'));
-        if (bassNode) bassNode.gain.value = val;
-    }
-    if (sessionStorage.getItem('volume-booster-treble')) {
-        const val = parseFloat(sessionStorage.getItem('volume-booster-treble'));
-        if (trebleNode) trebleNode.gain.value = val;
+    // Initialize on load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAudioEngine);
+    } else {
+        initAudioEngine();
     }
 
     function resumeAudioCtx() {
@@ -76,6 +100,7 @@
 
     // Listen for messages
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        // Try to init if not ready
         if (!audioCtx) initAudioEngine();
 
         if (request.action === 'SET_VOLUME') {
@@ -109,11 +134,15 @@
             sessionStorage.removeItem('volume-booster-treble');
             console.log("Volume Booster: Reset to defaults.");
         } else if (request.action === 'GET_STATE') {
-            sendResponse({
-                volume: (gainNode && gainNode.gain) ? gainNode.gain.value : 1,
-                bass: (bassNode && bassNode.gain) ? bassNode.gain.value : 0,
-                treble: (trebleNode && trebleNode.gain) ? trebleNode.gain.value : 0
-            });
+            // Only respond if we actually have an active audio engine
+            // This prevents empty frames from sending "default" zero values and overriding the actual player frame
+            if (gainNode && audioCtx) {
+                sendResponse({
+                    volume: gainNode.gain.value,
+                    bass: (bassNode && bassNode.gain) ? bassNode.gain.value : 0,
+                    treble: (trebleNode && trebleNode.gain) ? trebleNode.gain.value : 0
+                });
+            }
         }
     });
 })();
