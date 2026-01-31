@@ -99,6 +99,15 @@
                 resumeAudioCtx();
                 sessionStorage.setItem('volume-booster-treble', val);
             }
+        } else if (request.action === 'RESET') {
+            if (gainNode) gainNode.gain.value = 1;
+            if (bassNode) bassNode.gain.value = 0;
+            if (trebleNode) trebleNode.gain.value = 0;
+
+            sessionStorage.removeItem('volume-booster-gain');
+            sessionStorage.removeItem('volume-booster-bass');
+            sessionStorage.removeItem('volume-booster-treble');
+            console.log("Volume Booster: Reset to defaults.");
         } else if (request.action === 'GET_STATE') {
             sendResponse({
                 volume: (gainNode && gainNode.gain) ? gainNode.gain.value : 1,

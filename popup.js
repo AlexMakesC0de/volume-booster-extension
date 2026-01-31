@@ -58,6 +58,23 @@ document.addEventListener('DOMContentLoaded', () => {
         sendMessage('SET_TREBLE', value);
     });
 
+    // Reset Click
+    const resetBtn = document.getElementById('resetBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            // Update UI
+            volumeSlider.value = 1;
+            updateDisplay(1);
+            bassSlider.value = 0;
+            bassValue.textContent = '0dB';
+            trebleSlider.value = 0;
+            trebleValue.textContent = '0dB';
+
+            // Send Message
+            sendMessage('RESET', null);
+        });
+    }
+
     function sendMessage(action, value) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length === 0) return;
