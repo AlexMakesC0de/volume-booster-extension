@@ -4,7 +4,7 @@ A simple yet powerful browser extension to boost volume up to **500%** on any we
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## Features ✨
+## Features
 
 *   **Volume Boost:** Increase volume up to 500% (5x).
 *   **Audio EQ:** Fine-tune your audio with Bass and Treble controls.
@@ -13,7 +13,7 @@ A simple yet powerful browser extension to boost volume up to **500%** on any we
 *   **Reset Button:** Quickly restore default settings with one click.
 *   **Privacy Focused:** Runs locally, no tracking, no data collection.
 
-## Installation 🛠️
+## Installation
 
 Since this is a developer version, you can install it via "Load Unpacked":
 
@@ -24,7 +24,7 @@ Since this is a developer version, you can install it via "Load Unpacked":
 5.  Select the folder where you saved this project (`volume-extension`).
 6.  Pin the extension to your toolbar and enjoy!
 
-## Usage 🚀
+## Usage
 
 1.  Go to any website playing audio or video (e.g., YouTube, Spotify).
 2.  Click the **Volume Booster** icon in your toolbar.
@@ -32,7 +32,7 @@ Since this is a developer version, you can install it via "Load Unpacked":
 4.  Adjust **Bass** and **Treble** to your liking.
 5.  Click **Reset to Default** to clear all effects.
 
-## License 📄
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
