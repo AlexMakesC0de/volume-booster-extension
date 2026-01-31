@@ -23,6 +23,14 @@ h1 {
     color: #ffffff;
 }
 
+label {
+    font-size: 14px;
+    color: #e0e0e0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
 .control-group {
     width: 100%;
     display: flex;
@@ -55,11 +63,13 @@ input[type=range]::-webkit-slider-thumb {
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: #3b82f6; /* Brave/Chrome Blue-ish */
+    background: #3b82f6;
+    /* Brave/Chrome Blue-ish */
     cursor: pointer;
     -webkit-appearance: none;
-    margin-top: -6px; /* center thumb on track */
-    box-shadow: 0 0 4px rgba(0,0,0,0.4);
+    margin-top: -6px;
+    /* center thumb on track */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
     transition: background 0.2s;
 }
 

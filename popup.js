@@ -1,42 +1,70 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const slider = document.getElementById('volumeSlider');
-    const valueDisplay = document.getElementById('volumeValue');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeValue = document.getElementById('volumeValue');
+    const bassSlider = document.getElementById('bassSlider');
+    const bassValue = document.getElementById('bassValue');
+    const trebleSlider = document.getElementById('trebleSlider');
+    const trebleValue = document.getElementById('trebleValue');
 
-    if (!slider || !valueDisplay) return;
+    if (!volumeSlider || !volumeValue) return;
 
-    function updateDisplay(value) {
-        const percentage = Math.round(value * 100);
-        valueDisplay.textContent = `${percentage}%`;
+    function updateDisplay(vol) {
+        const percentage = Math.round(vol * 100);
+        volumeValue.textContent = `${percentage}%`;
     }
 
-    // Initialize: Get current volume from active tab
+    // Initialize: Get current state from active tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs.length === 0) return;
 
-        chrome.tabs.sendMessage(tabs[0].id, { action: 'GET_VOLUME' }, (response) => {
-            if (chrome.runtime.lastError) {
-                // Content script might not be injected on this page (e.g. chrome:// urls)
-                // Just default to 100%
-                return;
-            }
-            if (response && response.value) {
-                slider.value = response.value;
-                updateDisplay(response.value);
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'GET_STATE' }, (response) => {
+            if (chrome.runtime.lastError) return;
+
+            if (response) {
+                if (response.volume !== undefined) {
+                    volumeSlider.value = response.volume;
+                    updateDisplay(response.volume);
+                }
+                if (response.bass !== undefined) {
+                    bassSlider.value = response.bass;
+                    bassValue.textContent = `${response.bass}dB`;
+                }
+                if (response.treble !== undefined) {
+                    trebleSlider.value = response.treble;
+                    trebleValue.textContent = `${response.treble}dB`;
+                }
             }
         });
     });
 
-    // Event: Slider change
-    slider.addEventListener('input', () => {
-        const value = slider.value;
+    // Volume Change
+    volumeSlider.addEventListener('input', () => {
+        const value = volumeSlider.value;
         updateDisplay(value);
+        sendMessage('SET_VOLUME', value);
+    });
 
+    // Bass Change
+    bassSlider.addEventListener('input', () => {
+        const value = bassSlider.value;
+        bassValue.textContent = `${value}dB`;
+        sendMessage('SET_BASS', value);
+    });
+
+    // Treble Change
+    trebleSlider.addEventListener('input', () => {
+        const value = trebleSlider.value;
+        trebleValue.textContent = `${value}dB`;
+        sendMessage('SET_TREBLE', value);
+    });
+
+    function sendMessage(action, value) {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs.length === 0) return;
             chrome.tabs.sendMessage(tabs[0].id, {
-                action: 'SET_VOLUME',
+                action: action,
                 value: value
             });
         });
-    });
+    }
 });
