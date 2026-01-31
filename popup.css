@@ -63,8 +63,8 @@ input[type=range]::-webkit-slider-thumb {
     height: 20px;
     width: 20px;
     border-radius: 50%;
-    background: #3b82f6;
-    /* Brave/Chrome Blue-ish */
+    background: #9377f1;
+    /* Custom Purple */
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -6px;
@@ -74,13 +74,13 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 input[type=range]::-webkit-slider-thumb:hover {
-    background: #60a5fa;
+    background: #a78bfa;
 }
 
 .value-display {
     font-size: 24px;
     font-weight: bold;
-    color: #3b82f6;
+    color: #9377f1;
 }
 
 .footer {
@@ -102,6 +102,6 @@ input[type=range]::-webkit-slider-thumb:hover {
 }
 
 .reset-btn:hover {
-    border-color: #3b82f6;
-    color: #3b82f6;
+    border-color: #9377f1;
+    color: #9377f1;
 }
