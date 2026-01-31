@@ -16,44 +16,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize: Get current state from active tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (tabs.length === 0) return;
-        const tabId = tabs[0].id;
 
-        function checkConnection() {
-            chrome.tabs.sendMessage(tabId, { action: 'GET_STATE' }, (response) => {
-                if (chrome.runtime.lastError) {
-                    console.log("Volume Booster: Content script not ready. Injecting...");
-                    // Content script likely not injected -> Inject it now (Hot Injection)
-                    chrome.scripting.executeScript({
-                        target: { tabId: tabId },
-                        files: ['content.js']
-                    }, () => {
-                        if (chrome.runtime.lastError) {
-                            console.error("Volume Booster: Injection failed.", chrome.runtime.lastError);
-                        } else {
-                            // Retry after short delay (let script initialize)
-                            setTimeout(checkConnection, 50);
-                        }
-                    });
-                    return;
-                }
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'GET_STATE' }, (response) => {
+            if (chrome.runtime.lastError) return;
 
-                if (response) {
-                    if (response.volume !== undefined) {
-                        volumeSlider.value = response.volume;
-                        updateDisplay(response.volume);
-                    }
-                    if (response.bass !== undefined) {
-                        bassSlider.value = response.bass;
-                        bassValue.textContent = `${response.bass}dB`;
-                    }
-                    if (response.treble !== undefined) {
-                        trebleSlider.value = response.treble;
-                        trebleValue.textContent = `${response.treble}dB`;
-                    }
+            if (response) {
+                if (response.volume !== undefined) {
+                    volumeSlider.value = response.volume;
+                    updateDisplay(response.volume);
                 }
-            });
-        }
-        checkConnection();
+                if (response.bass !== undefined) {
+                    bassSlider.value = response.bass;
+                    bassValue.textContent = `${response.bass}dB`;
+                }
+                if (response.treble !== undefined) {
+                    trebleSlider.value = response.treble;
+                    trebleValue.textContent = `${response.treble}dB`;
+                }
+            }
+        });
     });
 
     // Volume Change
