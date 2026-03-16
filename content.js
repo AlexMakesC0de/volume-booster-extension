@@ -73,7 +73,7 @@
     function restoreSettings() {
         if (sessionStorage.getItem('volume-booster-gain')) {
             const val = parseFloat(sessionStorage.getItem('volume-booster-gain'));
-            if (gainNode) gainNode.gain.value = val;
+            if (gainNode) gainNode.gain.value = Math.max(0, Math.min(5, val));
         }
         if (sessionStorage.getItem('volume-booster-bass')) {
             const val = parseFloat(sessionStorage.getItem('volume-booster-bass'));
@@ -104,7 +104,7 @@
         if (!audioCtx) initAudioEngine();
 
         if (request.action === 'SET_VOLUME') {
-            const val = parseFloat(request.value);
+            const val = Math.max(0, Math.min(5, parseFloat(request.value)));
             if (gainNode) {
                 gainNode.gain.value = val;
                 resumeAudioCtx();
