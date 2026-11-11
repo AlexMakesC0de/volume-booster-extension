@@ -1,40 +1,76 @@
-# Volume Booster Extension 🎧
+<div align="center">
 
-A simple yet powerful browser extension to boost volume up to **500%** on any website. Works on Chrome, Brave, and other Chromium-based browsers.
+<img src="icons/sound_icon128x128.png" width="88" height="88" alt="Volume Booster icon">
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+# Volume Booster
+
+**A browser extension that boosts a tab's volume up to 500% and adds bass and treble controls.**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Manifest V3](https://img.shields.io/badge/manifest-V3-4285F4?logo=googlechrome&logoColor=white)
+![Chrome | Edge | Brave](https://img.shields.io/badge/browsers-Chrome%20%7C%20Edge%20%7C%20Brave-555)
+
+</div>
+
+Some videos and streams are too quiet even at full system volume. Volume Booster routes the page's audio through the Web Audio API so you can push it past 100% and shape the sound, all from a small popup. It is plain JavaScript with no build step, no dependencies and no network requests.
 
 ## Features
 
-*   **Volume Boost:** Increase volume up to 500% (5x).
-*   **Audio EQ:** Fine-tune your audio with Bass and Treble controls.
-*   **Persistent Settings:** Your volume levels are saved per tab—no need to reset on reload.
-*   **Dark Mode:** Sleek, modern purple-themed interface.
-*   **Reset Button:** Quickly restore default settings with one click.
-*   **Privacy Focused:** Runs locally, no tracking, no data collection.
+- **Volume** from 0% to 500%, in steps of 10%.
+- **Bass** and **Treble** from -10 dB to +10 dB.
+- **Reset to Default** restores 100% volume and a flat EQ.
+- **Remembers your settings** for the site in that tab, so they survive a page reload.
+- Works inside embedded players, because the script runs in every frame.
+- No tracking and no data collection. Settings stay in the page's session storage.
 
 ## Installation
 
-Since this is a developer version, you can install it via "Load Unpacked":
+The extension is not in a web store. Load it unpacked in any Chromium-based browser:
 
-1.  Clone or download this repository.
-2.  Open your browser and navigate to `chrome://extensions`.
-3.  Enable **Developer Mode** (toggle in the top-right corner).
-4.  Click **Load Unpacked**.
-5.  Select the folder where you saved this project (`volume-extension`).
-6.  Pin the extension to your toolbar and enjoy!
+1. Clone or download this repository:
+   ```bash
+   git clone https://github.com/AlexMakesC0de/volume-booster-extension.git
+   ```
+2. Open `chrome://extensions` (or `edge://extensions`, `brave://extensions`).
+3. Turn on **Developer mode**.
+4. Click **Load unpacked** and select the `volume-booster-extension` folder.
+5. Pin the extension to your toolbar.
 
 ## Usage
 
-1.  Go to any website playing audio or video (e.g., YouTube, Spotify).
-2.  Click the **Volume Booster** icon in your toolbar.
-3.  Use the **Volume Slider** to boost sound.
-4.  Adjust **Bass** and **Treble** to your liking.
-5.  Click **Reset to Default** to clear all effects.
+1. Open a page that plays audio or video, such as a YouTube video.
+2. Click the Volume Booster icon.
+3. Drag the sliders. Changes apply immediately.
+
+If the sliders have no effect, reload the page once with the extension installed and start playback before opening the popup.
+
+## How it works
+
+`content.js` is injected into every page and frame. It finds the first `<video>` or `<audio>` element (or waits for one to appear) and connects it to a Web Audio chain:
+
+```text
+media element -> low-shelf filter (200 Hz) -> high-shelf filter (3 kHz) -> gain -> speakers
+```
+
+The popup (`popup.html`, `popup.js`) sends the slider values to the content script with `chrome.tabs.sendMessage`, and reads the current values back when it opens.
+
+## Limitations
+
+- Only the first media element on a page is boosted.
+- Some sites serve media from another origin without CORS headers. The browser then restricts Web Audio processing of that media, so the extension cannot boost it.
+- Very high gain can clip and distort, depending on the source.
+
+## Project structure
+
+```text
+manifest.json   Extension manifest (Manifest V3)
+content.js      Audio engine injected into pages
+popup.html      Popup markup
+popup.js        Popup logic and messaging
+popup.css       Popup styles
+icons/          Toolbar and store icons
+```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-*Created by Alexandros*
+[MIT](LICENSE)
